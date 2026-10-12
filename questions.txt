@@ -1,0 +1,35 @@
+What do we refer to BST in 4319 ?
+British Summer Time
+Breadth Search Tree
+Binary Search Tree
+None of above
+Which class belongs to Java Swing?
+NumberFormatException
+String
+Graphics
+None of above
+What is the capital of France?
+Paris
+London
+Berlin
+Rome
+Which planet is known as the Red Planet?
+Earth
+Venus
+Mars
+Jupiter
+Recursion always needs a?
+Loop
+Base Case
+Queue
+Stack
+What is an integer?
+A whole number
+Any number above 0
+A bug
+Any number bellow 0
+What is Ohm's Law?
+V = I * C
+I = R / V
+R = I * V
+V = I * R
