@@ -1,3 +1,5 @@
+import Class_Src.QuestionsLoader;
+
 public class QuestionsLoaderTest {
     public static void main(String[] args) {
         QuestionsLoader test = new QuestionsLoader();

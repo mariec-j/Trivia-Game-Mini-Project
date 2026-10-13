@@ -1,3 +1,5 @@
+package Class_Src;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.FlowLayout;
@@ -16,31 +18,31 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class CardLayoutFrame extends JFrame {
-//    Buttons - - - - - - - - -
+    //    Buttons - - - - - - - - -
     private JButton startButton;
     private JButton exitButton;
     private JButton usernameButton;
     private JButton playButton;
     private JButton[] optionButtons;
     private JButton resetToMenuButton;
-//    Main App Layout - - - - -
+    //    Main App Layout - - - - -
     private CardLayout cardLayout;
-//    Panels for Layout - - - -
+    //    Panels for Layout - - - -
     private JPanel cardPanel;
     private JPanel welcomePanel;
     private JPanel gamePanel;
     private JPanel resultsPanel;
     private JPanel usernamePanel;
-//    Misc - - - - - - - - - - -
+    //    Misc - - - - - - - - - - -
     private String username = "Guest User";
     private JTextField inputField;
     private JLabel questionLabel;
     private JLabel resultsLabel;
     private int points = 0;
-//    Questions - - - - - - - - -
+    //    Questions - - - - - - - - -
     private List<List<String>> questionsList;
     private List<Integer> correctAnswers;
-//              list of correct options based on currrentQuestionID
+    //              list of correct options based on currrentQuestionID
 //              options 1-4 start on index 0, so indx 0 -> option 1, etc.
     private int currentQuestionID;
 
@@ -63,11 +65,13 @@ public class CardLayoutFrame extends JFrame {
         add(cardPanel);
 
         ButtonHandler handler = new ButtonHandler();
+        TextFieldHandler inputHandler = new TextFieldHandler();
         startButton.addActionListener(handler);
         exitButton.addActionListener(handler);
         usernameButton.addActionListener(handler);
         playButton.addActionListener(handler);
         resetToMenuButton.addActionListener(handler);
+        inputField.addActionListener(inputHandler);
 
     }
 
@@ -81,7 +85,7 @@ public class CardLayoutFrame extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout());
         startButton = new JButton("Start game!");
         buttonPanel.add(startButton);
-        welcomePanel.add(buttonPanel,BorderLayout.SOUTH);
+        welcomePanel.add(buttonPanel, BorderLayout.SOUTH);
     }
 
     private void createUsernamePanel() {
@@ -111,7 +115,7 @@ public class CardLayoutFrame extends JFrame {
         JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         optionButtons = new JButton[4];
         for (int i = 0; i < 4; i++) {
-            optionButtons[i] = new JButton("Option " + i+1);
+            optionButtons[i] = new JButton("Option " + i + 1);
             optionButtons[i].addActionListener(new OptionButtonHandler(i));
             buttonPanel.add(optionButtons[i]);
         }
@@ -119,13 +123,14 @@ public class CardLayoutFrame extends JFrame {
 
         loadQuestion(0);
 
-        exitButton = new JButton("Exit to Results");
+        exitButton = new JButton("Quit to Results");
         gamePanel.add(exitButton, BorderLayout.SOUTH);
     }
 
     private void importQuestions() {
         questionsList = new ArrayList<>();
         correctAnswers = new ArrayList<>();
+
 
         questionsList.add(List.of("Freebie! Please pick the Correct option.",
                 "Incorrect",
@@ -211,13 +216,15 @@ public class CardLayoutFrame extends JFrame {
 
     private void loadQuestion(int questionNumber) {
         currentQuestionID = questionNumber;
-        if (questionsList == null || currentQuestionID > (questionsList.size()-1)) {
+        if (questionsList == null || currentQuestionID > (questionsList.size() - 1)) {
+            questionsList.clear();
+            correctAnswers.clear();
             cardLayout.show(cardPanel, "R");
             return;
         }
         questionLabel.setText(questionsList.get(currentQuestionID).get(0));
         for (int i = 0; i < 4; i++) {
-            optionButtons[i].setText(questionsList.get(currentQuestionID).get(i+1));
+            optionButtons[i].setText(questionsList.get(currentQuestionID).get(i + 1));
         }
     }
 
@@ -249,14 +256,23 @@ public class CardLayoutFrame extends JFrame {
             } else if (e.getSource() == exitButton) {
                 cardLayout.show(cardPanel, "R");
             } else if (e.getSource() == resetToMenuButton) {
-                cardLayout.show(cardPanel,"W");
+                cardLayout.show(cardPanel, "W");
+            }
+        }
+    }
+
+    private class TextFieldHandler implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == inputField) {
+                setUser(String.format(e.getActionCommand()));
+                JOptionPane.showMessageDialog(null, "Welcome " + username);
             }
         }
     }
 
     private class OptionButtonHandler implements ActionListener {
         private int optionID;
-        private boolean isCorrect;
 
         OptionButtonHandler(int num) {
             this.optionID = num;

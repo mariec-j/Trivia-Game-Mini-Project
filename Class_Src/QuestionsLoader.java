@@ -1,3 +1,5 @@
+package Class_Src;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -6,12 +8,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class QuestionsLoader {
-    HashMap<Integer,ArrayList<String>> map;
-    ArrayList<Integer> list;
+    public HashMap<Integer,ArrayList<String>> map;
+    public ArrayList<Integer> list;
+
     public void readQuestions() {
         try {
             map = new HashMap<>();
-            FileReader fileReader = new FileReader("src\\Week07\\Week07_01\\questions.txt");
+            FileReader fileReader = new FileReader("src\\Question_Text_Files\\questions.txt");
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             int readerCount = 0;
 
@@ -41,7 +44,7 @@ public class QuestionsLoader {
     public void readAnswers() {
         try {
             list = new ArrayList<Integer>();
-            FileReader fileReader = new FileReader("src\\Week07\\Week07_01\\rubric.txt");
+            FileReader fileReader = new FileReader("src\\Question_Text_Files\\rubric.txt");
             BufferedReader bufferedReader = new BufferedReader(fileReader);
 
             int readerCount = 0;
