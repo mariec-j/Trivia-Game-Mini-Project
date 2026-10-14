@@ -10,11 +10,24 @@ import java.util.HashMap;
 public class QuestionsLoader {
     public HashMap<Integer,ArrayList<String>> map;
     public ArrayList<Integer> list;
+    private String fileQuestionsPath;
+    private String fileAnswersPath;
+
+    public QuestionsLoader() {
+        System.out.println("QuestionsLoader Object Created... Without Arguments");
+    }
+
+    public QuestionsLoader(String questionsPath, String answersPath) {
+        this.fileQuestionsPath = questionsPath;
+        this.fileAnswersPath = answersPath;
+        this.readQuestions();
+        this.readAnswers();
+    }
 
     public void readQuestions() {
         try {
             map = new HashMap<>();
-            FileReader fileReader = new FileReader("src\\Question_Text_Files\\questions.txt");
+            FileReader fileReader = new FileReader(fileQuestionsPath);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             int readerCount = 0;
 
@@ -44,7 +57,7 @@ public class QuestionsLoader {
     public void readAnswers() {
         try {
             list = new ArrayList<Integer>();
-            FileReader fileReader = new FileReader("src\\Question_Text_Files\\rubric.txt");
+            FileReader fileReader = new FileReader(fileAnswersPath);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
 
             int readerCount = 0;
@@ -66,4 +79,61 @@ public class QuestionsLoader {
             e.printStackTrace();
         }
     }
+
+    public void readQuestions(String path) {
+        try {
+            map = new HashMap<>();
+            FileReader fileReader = new FileReader(path);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            int readerCount = 0;
+
+            String line = "";
+            while (true) {
+                line = bufferedReader.readLine();
+                if (line == null) { break; }
+
+                System.out.print(readerCount + ": " + line + "\n");
+
+                int questionNumber = readerCount/5 + 1;
+                if (readerCount % 5 == 0) {
+                    map.put(questionNumber, new ArrayList<>());
+                }
+                map.get(questionNumber).add(line);
+                readerCount++;
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.print("FileNotFoundException Found");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.print("IOException Found.");
+            e.printStackTrace();
+        }
+    }
+    public void readAnswers(String path) {
+        try {
+            list = new ArrayList<Integer>();
+            FileReader fileReader = new FileReader(path);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            int readerCount = 0;
+            String line = "";
+            while (true) {
+                line = bufferedReader.readLine();
+                if (line == null) { break; }
+
+                System.out.print(readerCount + ": " + line + "\n");
+                list.add(Integer.parseInt(line));
+                readerCount++;
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.print("FileNotFoundException Found");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.print("IOException Found.");
+            e.printStackTrace();
+        }
+    }
+
 }

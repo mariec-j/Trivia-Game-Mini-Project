@@ -4,8 +4,8 @@ public class QuestionsLoaderTest {
     public static void main(String[] args) {
         QuestionsLoader test = new QuestionsLoader();
 
-        test.readQuestions();
-        test.readAnswers();
+        test.readQuestions("src\\Question_Text_Files\\questions.txt");
+        test.readAnswers("src\\Question_Text_Files\\rubric.txt");
 
         System.out.print("QUESTION SET - - - -\n");
         for (int i = 0; i < test.map.size(); i++) {

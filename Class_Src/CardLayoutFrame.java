@@ -40,11 +40,12 @@ public class CardLayoutFrame extends JFrame {
     private JLabel resultsLabel;
     private int points = 0;
     //    Questions - - - - - - - - -
-    private List<List<String>> questionsList;
+    private List<ArrayList<String>> questionsList;
     private List<Integer> correctAnswers;
     //              list of correct options based on currrentQuestionID
 //              options 1-4 start on index 0, so indx 0 -> option 1, etc.
     private int currentQuestionID;
+    private QuestionsLoader qLoader;
 
     public CardLayoutFrame() {
         cardLayout = new CardLayout();
@@ -131,86 +132,14 @@ public class CardLayoutFrame extends JFrame {
         questionsList = new ArrayList<>();
         correctAnswers = new ArrayList<>();
 
-
-        questionsList.add(List.of("Freebie! Please pick the Correct option.",
-                "Incorrect",
-                "Incorrect",
-                "Correct",
-                "Incorrect"));
-
-        correctAnswers.add(2);
-
-        questionsList.add(List.of("What is Ohm's Law?",
-                "V = I * C",
-                "I = R / V",
-                "R = I * V",
-                "V = I * R"));
-
-        correctAnswers.add(3);
-
-        questionsList.add(List.of("What is an integer?",
-                "A whole number",
-                "Any number above 0",
-                "A bug",
-                "Any number bellow 0"));
-
-        correctAnswers.add(0);
-
-        questionsList.add(List.of("What is an integer?",
-                "A whole number",
-                "Any number above 0",
-                "A bug",
-                "Any number bellow 0"));
-
-        correctAnswers.add(0);
-
-        questionsList.add(List.of("What is an integer?",
-                "A whole number",
-                "Any number above 0",
-                "A bug",
-                "Any number bellow 0"));
-
-        correctAnswers.add(0);
-
-        questionsList.add(List.of("What is an integer?",
-                "A whole number",
-                "Any number above 0",
-                "A bug",
-                "Any number bellow 0"));
-
-        correctAnswers.add(0);
-
-        questionsList.add(List.of("What is an integer?",
-                "A whole number",
-                "Any number above 0",
-                "A bug",
-                "Any number bellow 0"));
-
-        correctAnswers.add(0);
-
-        questionsList.add(List.of("What is an integer?",
-                "A whole number",
-                "Any number above 0",
-                "A bug",
-                "Any number bellow 0"));
-
-        correctAnswers.add(0);
-
-        questionsList.add(List.of("What is an integer?",
-                "A whole number",
-                "Any number above 0",
-                "A bug",
-                "Any number bellow 0"));
-
-        correctAnswers.add(0);
-
-        questionsList.add(List.of("What is an integer?",
-                "A whole number",
-                "Any number above 0",
-                "A bug",
-                "Any number bellow 0"));
-
-        correctAnswers.add(0);
+        qLoader = new QuestionsLoader("src\\Question_Text_Files\\questions.txt",
+                "src\\Question_Text_Files\\rubric.txt");
+        System.out.println(qLoader.map.get(0));
+        System.out.println(qLoader.list.get(0));
+        for (int i = 0; i < 5 ; i++) {
+            questionsList.add(qLoader.map.get(i+1));
+            correctAnswers.add(qLoader.list.get(i));
+        }
 
     }
 
