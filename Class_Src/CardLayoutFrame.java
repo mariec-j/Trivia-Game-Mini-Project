@@ -38,14 +38,16 @@ public class CardLayoutFrame extends JFrame {
     private JTextField inputField;
     private JLabel questionLabel;
     private JLabel resultsLabel;
-    private int points = 0;
+    private JLabel scoreBoard;
     //    Questions - - - - - - - - -
     private List<ArrayList<String>> questionsList;
     private List<Integer> correctAnswers;
-    //              list of correct options based on currrentQuestionID
+//              list of correct options based on currrentQuestionID
 //              options 1-4 start on index 0, so indx 0 -> option 1, etc.
     private int currentQuestionID;
     private QuestionsLoader qLoader;
+    private float score;
+    private int qAmnt;
 
     public CardLayoutFrame() {
         cardLayout = new CardLayout();
@@ -102,6 +104,7 @@ public class CardLayoutFrame extends JFrame {
         playButton = new JButton("Play Game");
         buttonPanels.add(playButton);
         usernamePanel.add(buttonPanels, BorderLayout.CENTER);
+        this.score = 0;
     }
 
     private void createGamePage() {
@@ -136,11 +139,12 @@ public class CardLayoutFrame extends JFrame {
                 "src\\Question_Text_Files\\rubric.txt");
         System.out.println(qLoader.map.get(0));
         System.out.println(qLoader.list.get(0));
-        for (int i = 0; i < 5 ; i++) {
+        this.qAmnt = 5;
+
+        for (int i = 0; i < qAmnt ; i++) {
             questionsList.add(qLoader.map.get(i+1));
             correctAnswers.add(qLoader.list.get(i));
         }
-
     }
 
     private void loadQuestion(int questionNumber) {
@@ -160,7 +164,16 @@ public class CardLayoutFrame extends JFrame {
     private void createResultsPage() {
         resultsPanel = new JPanel(new BorderLayout());
         resultsLabel = new JLabel("Results Screen - " + username, SwingConstants.CENTER);
+        resultsLabel.setFont(new Font("Arial", Font.BOLD, 32));
         resultsPanel.add(resultsLabel, BorderLayout.NORTH);
+
+        scoreBoard = new JLabel();
+        scoreBoard.setHorizontalAlignment(SwingConstants.CENTER);
+        scoreBoard.setFont(new Font("Arial", Font.PLAIN, 18));
+        scoreBoard.setText("<html><body><b>- - - - - SCORE - - - - -</b><br>" +
+                score + " / " + qAmnt + "<br>" +
+                "\nScore Percentage: " + score/qAmnt + "</body></html>");
+        resultsPanel.add(scoreBoard);
 
         resetToMenuButton = new JButton("Go back to Menu");
         resultsPanel.add(resetToMenuButton, BorderLayout.SOUTH);
@@ -171,6 +184,13 @@ public class CardLayoutFrame extends JFrame {
         this.username = userConfig;
         resultsLabel.setText("Results Screen - " + username);
     }
+
+    private void updateScore(float newScore) {
+        this.score = newScore;
+        scoreBoard.setText("<html><body><b>- - - - - SCORE - - - - -</b><br>" +
+                score + " / " + qAmnt + "<br>" +
+                "\nScore Percentage: " + (score/qAmnt)*100 + "%</body></html>");
+    };
 
     private class ButtonHandler implements ActionListener {
         @Override
@@ -212,6 +232,8 @@ public class CardLayoutFrame extends JFrame {
 //            Check if option picked was correct
             if (optionID == correctAnswers.get(currentQuestionID)) {
                 JOptionPane.showMessageDialog(null, "Correct!");
+                score++;
+                updateScore(score);
             }
             else {
                 JOptionPane.showMessageDialog(null, "Incorrect.");
