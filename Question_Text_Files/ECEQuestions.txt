@@ -1,0 +1,50 @@
+What is BST referred to?
+British Summer Time
+Breadth Search Tree
+Binary Search Tree
+None of above
+Which class belongs to Java Swing?
+NumberFormatException
+String
+Graphics
+None of above
+Recursion always needs a...?
+Loop
+Base Case
+Queue
+Stack
+What is an integer?
+A whole number
+Any number above 0
+A bug
+Any number bellow 0
+What is Ohm's Law?
+V = I * C
+I = R / V
+R = I * V
+V = I * R
+What's the average decibel drop of a filter?
+10
+20
+30
+40
+Which passive component has a leading current?
+Inductor
+Capacitor
+Resistor
+Battery
+Which of these is a universal logic gate?
+AND
+OR
+XOR
+NAND
+Which Big O notation is the most efficient at large numbers?
+O(n)
+O(n^2)
+O(2nlog(n))
+O(1)
+What do you use a Bitwise reduction XOR for?
+Adding bits
+Parity check
+Subtracting bits
+Doubling bit size

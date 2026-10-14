@@ -27,7 +27,8 @@ public class CardLayoutFrame extends JFrame {
     private JButton startButton;
     private JButton exitButton;
     private JButton usernameButton;
-    private JButton playButton;
+    private JButton playECEQ;
+    private JButton playDeadlockQ;
     private JButton[] optionButtons;
     private Random randomNum = new Random();
     private JButton resetToMenuButton;
@@ -48,6 +49,11 @@ public class CardLayoutFrame extends JFrame {
     private int timerSeconds;
     private JLabel timerLabel;
 //    Questions - - - - - - - - - - - - -
+    private List<String> pathsQuestion = List.of("src\\Question_Text_Files\\ECEQuestions.txt",
+        "src\\Question_Text_Files\\DeadlockQuestions.txt");
+    private List<String> pathsRubric = List.of("src\\Question_Text_Files\\ECERubric.txt",
+            "src\\Question_Text_Files\\DeadlockRubric.txt");
+    private int questionSet;
     private List<ArrayList<String>> questionsList;
     private List<Integer> correctAnswers;
 //              list of correct options based on currentQuestionID
@@ -82,7 +88,8 @@ public class CardLayoutFrame extends JFrame {
         startButton.addActionListener(handler);
         exitButton.addActionListener(handler);
         usernameButton.addActionListener(handler);
-        playButton.addActionListener(handler);
+        playECEQ.addActionListener(handler);
+        playDeadlockQ.addActionListener(handler);
         resetToMenuButton.addActionListener(handler);
         inputField.addActionListener(inputHandler);
 
@@ -111,8 +118,10 @@ public class CardLayoutFrame extends JFrame {
         JPanel buttonPanels = new JPanel(new FlowLayout());
         usernameButton = new JButton("Submit user name");
         buttonPanels.add(usernameButton);
-        playButton = new JButton("Play Game");
-        buttonPanels.add(playButton);
+        playECEQ = new JButton("Play ECE Questions");
+        buttonPanels.add(playECEQ);
+        playDeadlockQ = new JButton("Play Deadlock Questions");
+        buttonPanels.add(playDeadlockQ);
         usernamePanel.add(buttonPanels, BorderLayout.CENTER);
         this.score = 0;
     }
@@ -124,7 +133,7 @@ public class CardLayoutFrame extends JFrame {
 
         JPanel topPanel = new JPanel(new FlowLayout());
         questionLabel = new JLabel("Quiz screen", SwingConstants.CENTER);
-        questionLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        questionLabel.setFont(new Font("Arial", Font.BOLD, 20));
         topPanel.add(questionLabel);
 
         timerLabel = new JLabel("" + timerSeconds, SwingConstants.CENTER);
@@ -157,11 +166,11 @@ public class CardLayoutFrame extends JFrame {
         questionsList = new ArrayList<>();
         correctAnswers = new ArrayList<>();
 
-        qLoader = new QuestionsLoader("src\\Question_Text_Files\\questions.txt",
-                "src\\Question_Text_Files\\rubric.txt");
+        qLoader = new QuestionsLoader(pathsQuestion.get(questionSet),
+                pathsRubric.get(questionSet));
 //        System.out.println(qLoader.map.get(0));
 //        System.out.println(qLoader.list.get(0));
-        this.qAmnt = 5;
+        this.qAmnt = 10;
 
         for (int i = 0; i < qAmnt ; i++) {
             questionsList.add(qLoader.map.get(i+1));
@@ -228,12 +237,27 @@ public class CardLayoutFrame extends JFrame {
             if (e.getSource() == startButton) {
                 cardLayout.show(cardPanel, "U");
             } else if (e.getSource() == usernameButton) {
-                setUser(inputField.getText());
+                String newUser = inputField.getText();
+                if (newUser.length() > 15) {
+                    JOptionPane.showMessageDialog(null, "Too long of a name",
+                            "", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                setUser(newUser);
                 JOptionPane.showMessageDialog(null, "Welcome " + username);
-            } else if (e.getSource() == playButton) {
+            } else if (e.getSource() == playECEQ) {
+                questionSet = 0;
+                importQuestions();
+                loadQuestion(0);
+                cardLayout.show(cardPanel, "Q");
+            } else if (e.getSource() == playDeadlockQ) {
+                questionSet = 1;
+                importQuestions();
                 loadQuestion(0);
                 cardLayout.show(cardPanel, "Q");
             } else if (e.getSource() == exitButton) {
+                questionTimer.restart();
+                questionTimer.stop();
                 cardLayout.show(cardPanel, "R");
             } else if (e.getSource() == resetToMenuButton) {
                 cardLayout.show(cardPanel, "W");
@@ -245,7 +269,13 @@ public class CardLayoutFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == inputField) {
-                setUser(String.format(e.getActionCommand()));
+                String newUser = String.format(e.getActionCommand());
+                if (newUser.length() > 15) {
+                    JOptionPane.showMessageDialog(null, "Too long of a name",
+                            "", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                setUser(newUser);
                 JOptionPane.showMessageDialog(null, "Welcome " + username);
             }
         }
