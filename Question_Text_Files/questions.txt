@@ -1,4 +1,4 @@
-What do we refer to BST in 4319 ?
+What do we refer to BST in 4319?
 British Summer Time
 Breadth Search Tree
 Binary Search Tree
@@ -8,17 +8,7 @@ NumberFormatException
 String
 Graphics
 None of above
-What is the capital of France?
-Paris
-London
-Berlin
-Rome
-Which planet is known as the Red Planet?
-Earth
-Venus
-Mars
-Jupiter
-Recursion always needs a?
+Recursion always needs a...?
 Loop
 Base Case
 Queue
@@ -33,3 +23,13 @@ V = I * C
 I = R / V
 R = I * V
 V = I * R
+What is the capital of France?
+Paris
+London
+Berlin
+Rome
+Which planet is known as the Red Planet?
+Earth
+Venus
+Mars
+Jupiter

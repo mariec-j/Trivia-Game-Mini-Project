@@ -2,6 +2,7 @@ package Class_Src;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -9,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,33 +18,39 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 public class CardLayoutFrame extends JFrame {
-    //    Buttons - - - - - - - - -
+//    Main App Layout - - - - - - - - - -
+    private CardLayout cardLayout;
+//    Buttons - - - - - - - - - - - - - -
     private JButton startButton;
     private JButton exitButton;
     private JButton usernameButton;
     private JButton playButton;
     private JButton[] optionButtons;
+    private Random randomNum = new Random();
     private JButton resetToMenuButton;
-    //    Main App Layout - - - - -
-    private CardLayout cardLayout;
-    //    Panels for Layout - - - -
+//    Panels for Layout - - - - - - - - -
     private JPanel cardPanel;
     private JPanel welcomePanel;
     private JPanel gamePanel;
     private JPanel resultsPanel;
     private JPanel usernamePanel;
-    //    Misc - - - - - - - - - - -
+//    Results page  - - - - - - - - - - - - - - -
     private String username = "Guest User";
     private JTextField inputField;
     private JLabel questionLabel;
     private JLabel resultsLabel;
     private JLabel scoreBoard;
-    //    Questions - - - - - - - - -
+//    Timer - - - - - - - - - - - - - - -
+    private Timer questionTimer;
+    private int timerSeconds;
+    private JLabel timerLabel;
+//    Questions - - - - - - - - - - - - -
     private List<ArrayList<String>> questionsList;
     private List<Integer> correctAnswers;
-//              list of correct options based on currrentQuestionID
+//              list of correct options based on currentQuestionID
 //              options 1-4 start on index 0, so indx 0 -> option 1, etc.
     private int currentQuestionID;
     private QuestionsLoader qLoader;
@@ -59,6 +67,7 @@ public class CardLayoutFrame extends JFrame {
         createUsernamePanel();
         createGamePage();
         createResultsPage();
+        timerSetUp();
 
         cardPanel.add(welcomePanel, "W");
         cardPanel.add(usernamePanel, "U");
@@ -69,6 +78,7 @@ public class CardLayoutFrame extends JFrame {
 
         ButtonHandler handler = new ButtonHandler();
         TextFieldHandler inputHandler = new TextFieldHandler();
+
         startButton.addActionListener(handler);
         exitButton.addActionListener(handler);
         usernameButton.addActionListener(handler);
@@ -112,9 +122,18 @@ public class CardLayoutFrame extends JFrame {
 
         currentQuestionID = 1;
 
+        JPanel topPanel = new JPanel(new FlowLayout());
         questionLabel = new JLabel("Quiz screen", SwingConstants.CENTER);
         questionLabel.setFont(new Font("Arial", Font.BOLD, 32));
-        gamePanel.add(questionLabel, BorderLayout.NORTH);
+        topPanel.add(questionLabel);
+
+        timerLabel = new JLabel("" + timerSeconds, SwingConstants.CENTER);
+        timerLabel.setVerticalTextPosition(SwingConstants.CENTER);
+        timerLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+        timerLabel.setHorizontalAlignment(FlowLayout.RIGHT);
+        topPanel.add(timerLabel);
+
+        gamePanel.add(topPanel, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         optionButtons = new JButton[4];
@@ -125,10 +144,13 @@ public class CardLayoutFrame extends JFrame {
         }
         gamePanel.add(buttonPanel, BorderLayout.CENTER);
 
-        loadQuestion(0);
-
         exitButton = new JButton("Quit to Results");
         gamePanel.add(exitButton, BorderLayout.SOUTH);
+    }
+
+    private void timerSetUp() {
+        TimerHandler tHandler = new TimerHandler();
+        questionTimer = new Timer(1000, tHandler);
     }
 
     private void importQuestions() {
@@ -137,8 +159,8 @@ public class CardLayoutFrame extends JFrame {
 
         qLoader = new QuestionsLoader("src\\Question_Text_Files\\questions.txt",
                 "src\\Question_Text_Files\\rubric.txt");
-        System.out.println(qLoader.map.get(0));
-        System.out.println(qLoader.list.get(0));
+//        System.out.println(qLoader.map.get(0));
+//        System.out.println(qLoader.list.get(0));
         this.qAmnt = 5;
 
         for (int i = 0; i < qAmnt ; i++) {
@@ -149,16 +171,24 @@ public class CardLayoutFrame extends JFrame {
 
     private void loadQuestion(int questionNumber) {
         currentQuestionID = questionNumber;
+        questionTimer.restart();
         if (questionsList == null || currentQuestionID > (questionsList.size() - 1)) {
             questionsList.clear();
             correctAnswers.clear();
+            questionTimer.stop();
             cardLayout.show(cardPanel, "R");
             return;
         }
+        questionTimer.start();
+        timerSeconds = 15;
+        timerLabel.setText("" + timerSeconds);
         questionLabel.setText(questionsList.get(currentQuestionID).get(0));
         for (int i = 0; i < 4; i++) {
+            optionButtons[i].setBackground(new Color(randomNum.nextInt(54)+200,
+                    randomNum.nextInt(54)+200,randomNum.nextInt(54)+200));
             optionButtons[i].setText(questionsList.get(currentQuestionID).get(i + 1));
         }
+        System.out.println("On question: " + currentQuestionID);
     }
 
     private void createResultsPage() {
@@ -201,6 +231,7 @@ public class CardLayoutFrame extends JFrame {
                 setUser(inputField.getText());
                 JOptionPane.showMessageDialog(null, "Welcome " + username);
             } else if (e.getSource() == playButton) {
+                loadQuestion(0);
                 cardLayout.show(cardPanel, "Q");
             } else if (e.getSource() == exitButton) {
                 cardLayout.show(cardPanel, "R");
@@ -231,15 +262,38 @@ public class CardLayoutFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
 //            Check if option picked was correct
             if (optionID == correctAnswers.get(currentQuestionID)) {
-                JOptionPane.showMessageDialog(null, "Correct!");
+                questionTimer.stop();
+                JOptionPane.showMessageDialog(null, "Correct!",
+                        "", JOptionPane.INFORMATION_MESSAGE);
                 score++;
                 updateScore(score);
             }
             else {
-                JOptionPane.showMessageDialog(null, "Incorrect.");
+                questionTimer.stop();
+                JOptionPane.showMessageDialog(null, "Incorrect.",
+                        "", JOptionPane.ERROR_MESSAGE);
             }
 
             loadQuestion(currentQuestionID+1);
+        }
+    }
+
+    private class TimerHandler implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            timerSeconds--;
+            if (timerSeconds > 0) {
+                timerLabel.setText("" + timerSeconds);
+                System.out.print(timerSeconds);
+            }
+            else {
+                timerLabel.setText("" + 0);
+                questionTimer.restart();
+                questionTimer.stop();
+                JOptionPane.showMessageDialog(null, "Time Out :(",
+                        "", JOptionPane.WARNING_MESSAGE);
+                loadQuestion(currentQuestionID+1);
+            }
         }
     }
 }
