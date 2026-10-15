@@ -34,6 +34,7 @@ A short, 10 question trivia game meant for one player.
 - UI Design
   - Randomized colors for answer options
   - Results screen colored based on score
+    - [Desmos representation of the color based on score](https://www.desmos.com/calculator/ypr4snytlu)
 
 ## Files
 
