@@ -241,7 +241,6 @@ public class CardLayoutFrame extends JFrame {
 
 //    used before showing results page to color background to be...
 //    a color between green and red
-
     private void checkScore() {
         float gradMulti = (score/qAmnt);
         int r = gradMulti < 0.5? 255:(int)(310 - (110*gradMulti));
