@@ -11,6 +11,8 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,6 +32,10 @@ public class CardLayoutFrame extends JFrame {
     private JButton playECEQ;
     private JButton playDeadlockQ;
     private JButton[] optionButtons;
+    private Icon[] buttonIcons = {new ImageIcon("src\\Images\\Circle.png"),
+            new ImageIcon("src\\Images\\Square.png"),
+            new ImageIcon("src\\Images\\Diamond.png"),
+            new ImageIcon("src\\Images\\Triangle.png")};
     private Random randomNum = new Random();
     private JButton resetToMenuButton;
 //    Panels for Layout - - - - - - - - -
@@ -150,6 +156,9 @@ public class CardLayoutFrame extends JFrame {
         for (int i = 0; i < 4; i++) {
             optionButtons[i] = new JButton("Option " + i + 1);
             optionButtons[i].setFont(new Font("Times New Roman", Font.BOLD, 20));
+            optionButtons[i].setIcon(buttonIcons[i]);
+            optionButtons[i].setHorizontalTextPosition(SwingConstants.CENTER);
+            optionButtons[i].setVerticalTextPosition(SwingConstants.CENTER);
             optionButtons[i].addActionListener(new OptionButtonHandler(i));
             buttonPanel.add(optionButtons[i]);
         }
