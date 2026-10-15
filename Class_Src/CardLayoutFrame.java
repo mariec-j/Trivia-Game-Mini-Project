@@ -123,6 +123,7 @@ public class CardLayoutFrame extends JFrame {
         playDeadlockQ = new JButton("Play Deadlock Questions");
         buttonPanels.add(playDeadlockQ);
         usernamePanel.add(buttonPanels, BorderLayout.CENTER);
+
         this.score = 0;
     }
 
@@ -148,6 +149,7 @@ public class CardLayoutFrame extends JFrame {
         optionButtons = new JButton[4];
         for (int i = 0; i < 4; i++) {
             optionButtons[i] = new JButton("Option " + i + 1);
+            optionButtons[i].setFont(new Font("Times New Roman", Font.BOLD, 20));
             optionButtons[i].addActionListener(new OptionButtonHandler(i));
             buttonPanel.add(optionButtons[i]);
         }
@@ -184,7 +186,9 @@ public class CardLayoutFrame extends JFrame {
         if (questionsList == null || currentQuestionID > (questionsList.size() - 1)) {
             questionsList.clear();
             correctAnswers.clear();
+            questionTimer.restart();
             questionTimer.stop();
+            checkScore();
             cardLayout.show(cardPanel, "R");
             return;
         }
@@ -193,11 +197,16 @@ public class CardLayoutFrame extends JFrame {
         timerLabel.setText("" + timerSeconds);
         questionLabel.setText(questionsList.get(currentQuestionID).get(0));
         for (int i = 0; i < 4; i++) {
-            optionButtons[i].setBackground(new Color(randomNum.nextInt(54)+200,
-                    randomNum.nextInt(54)+200,randomNum.nextInt(54)+200));
+            optionButtons[i].setBackground(randomLightColor());
             optionButtons[i].setText(questionsList.get(currentQuestionID).get(i + 1));
         }
         System.out.println("On question: " + currentQuestionID);
+    }
+
+    private Color randomLightColor() {
+        Color lightColor = new Color(randomNum.nextInt(54)+200,
+                randomNum.nextInt(54)+200,randomNum.nextInt(54)+200);
+        return lightColor;
     }
 
     private void createResultsPage() {
@@ -216,7 +225,6 @@ public class CardLayoutFrame extends JFrame {
 
         resetToMenuButton = new JButton("Go back to Menu");
         resultsPanel.add(resetToMenuButton, BorderLayout.SOUTH);
-
     }
 
     private void setUser(String userConfig) {
@@ -230,6 +238,17 @@ public class CardLayoutFrame extends JFrame {
                 score + " / " + qAmnt + "<br>" +
                 "\nScore Percentage: " + (score/qAmnt)*100 + "%</body></html>");
     };
+
+//    used before showing results page to color background to be...
+//    a color between green and red
+
+    private void checkScore() {
+        float gradMulti = (score/qAmnt);
+        int r = gradMulti < 0.5? 255:(int)(310 - (110*gradMulti));
+        int g = gradMulti < 0.5? (int)(200 + (110*gradMulti)):255;
+        resultsPanel.setBackground(new Color(r, g,200));
+
+    }
 
     private class ButtonHandler implements ActionListener {
         @Override
@@ -247,17 +266,22 @@ public class CardLayoutFrame extends JFrame {
                 JOptionPane.showMessageDialog(null, "Welcome " + username);
             } else if (e.getSource() == playECEQ) {
                 questionSet = 0;
+                updateScore(0);
                 importQuestions();
                 loadQuestion(0);
                 cardLayout.show(cardPanel, "Q");
             } else if (e.getSource() == playDeadlockQ) {
                 questionSet = 1;
+                updateScore(0);
                 importQuestions();
                 loadQuestion(0);
                 cardLayout.show(cardPanel, "Q");
             } else if (e.getSource() == exitButton) {
                 questionTimer.restart();
                 questionTimer.stop();
+                questionsList.clear();
+                correctAnswers.clear();
+                checkScore();
                 cardLayout.show(cardPanel, "R");
             } else if (e.getSource() == resetToMenuButton) {
                 cardLayout.show(cardPanel, "W");
@@ -314,7 +338,7 @@ public class CardLayoutFrame extends JFrame {
             timerSeconds--;
             if (timerSeconds > 0) {
                 timerLabel.setText("" + timerSeconds);
-                System.out.print(timerSeconds);
+                System.out.println("Time Left: " +  timerSeconds);
             }
             else {
                 timerLabel.setText("" + 0);
