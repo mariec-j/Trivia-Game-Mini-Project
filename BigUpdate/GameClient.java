@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Scanner;
+//import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 public class GameClient {
     private static final String SERVER_HOST = "localhost";
@@ -18,18 +19,30 @@ public class GameClient {
             ObjectOutputStream outp = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream inp = new ObjectInputStream(socket.getInputStream());
 
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter your username: ");
-            String username = scanner.nextLine();
+            String username = JOptionPane.showInputDialog("Enter your name:");
+            String password = JOptionPane.showInputDialog("Enter your password:");
 
             // Sends username to server
             // You can also probably put password with username via this!
-            outp.writeObject(username);
+            outp.writeObject(username + "$" + password);
             outp.flush();
 
             // Recieve response
-            String message = (String) inp.readObject();
-            System.out.println("Server says: " + message);
+            String inpMessage = (String) inp.readObject();
+            String message = inpMessage.split("\\$",2)[1];
+            String key = inpMessage.split("\\$",2)[0];
+
+            if (key.equals("Redo")) {
+                for (int i = 0; i <4; i++) {
+                    password = JOptionPane.showInputDialog("Reenter your password:");
+                    outp.writeObject(password);
+                    outp.flush();
+                }
+                inpMessage = (String) inp.readObject();
+            }
+
+
+            JOptionPane.showMessageDialog(null,"Server says: " + message);
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

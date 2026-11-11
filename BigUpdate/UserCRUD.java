@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.NoSuchElementException;
 
 public class UserCRUD {
     private Connection CRUDConnection;
@@ -49,19 +50,21 @@ public class UserCRUD {
 //    }
 
     //CREATE - - - - - - - - - - - - - - - - - - - -
-    public static User addUser(String username) {
-        String sql = "INSERT INTO userdb.users(username) VALUES(?)";
+    public static void addUser(String username, String password) {
+        String sql = "INSERT INTO userdb.users(username, score, password) VALUES(?,?,?)";
         try {
             PreparedStatement preparedStatement =
                     GameServer.connection.prepareStatement(sql);
             preparedStatement.setString(1, username);
+            preparedStatement.setString(2, "0");
+            preparedStatement.setString(3, password);
             preparedStatement.executeUpdate();
             System.out.println("User added " + username);
+
         } catch (SQLException e) {
             System.out.println("Error adding user: " + e.getMessage());
             e.printStackTrace();
         }
-        return new User(username, 0);
     }
 
     //READ - - - - - - - - - - - - - - - - - - - - -
@@ -81,24 +84,70 @@ public class UserCRUD {
         }
     }
 
-    public static User getUser(String username) {
+    /**
+     *
+     * @param username
+     * @param password
+     * @return int base on the outcome of the function
+     * 0 = Reoccuring user successfully logged in
+     * 1 = new user was created and will log in
+     * 2 = User failed to log in
+     */
+    public static int verifyLogin(String username, String password) {
         String sql = "SELECT * FROM userdb.users WHERE username = ?";
         try {
             PreparedStatement selectStmt = GameServer.connection.prepareStatement(sql);
             selectStmt.setString(1, username);
             ResultSet rs = selectStmt.executeQuery();
             if (rs.next()) {
-                int score = rs.getInt("score");
-                System.out.println("Welcome Back " + username + ". Highest Score = " + score);
-                return new User(username, score);
+                // User exists: check if the password matches
+                String dbPassword = rs.getString("password");
+                if (dbPassword != null && dbPassword.equals(password)) {
+                    int score = rs.getInt("score");
+                    System.out.println("User, " + username + " found. Highest Score = " + score);
+                    return 0;
+                } else {
+                    System.out.println("Invalid password for user: " + username);
+                    return 2; // Signals a failed login to GameServer
+                }
             } else {
-                return addUser(username);
+                // User does not exist: register them with the provided password
+                addUser(username, password);
+                System.out.println("Add user successfully done.");
+                return 1;
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return new User(username, 0);
+        return 3;
+    }
+
+    /**
+     *
+     * @param username
+     * @return User
+     */
+    public static User getUser(String username) throws NoSuchElementException {
+        String sql = "SELECT * FROM userdb.users WHERE username = ?";
+        try {
+            PreparedStatement selectStmt = GameServer.connection.prepareStatement(sql);
+            selectStmt.setString(1, username);
+            ResultSet rs = selectStmt.executeQuery();
+
+            if (rs.next()) {
+                int score = rs.getInt("score");
+                System.out.println("Welcome Back " + username + ". Highest Score = " + score);
+                return new User(username, score);
+            } else {
+                throw new NoSuchElementException("User somehow doesn't exist.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        throw new NoSuchElementException("User somehow doesn't exist.");
     }
 }
